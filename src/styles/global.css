@@ -63,6 +63,17 @@ h1, h2, h3, h4 {
   line-height: 1.7;
 }
 
+@keyframes pmRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* The "funnel mark" — four descending bars, the last one in the accent color.
    Reused in the header and footer at different sizes via the --mark-unit var. */
 .funnel-mark {

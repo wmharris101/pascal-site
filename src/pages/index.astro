@@ -21,29 +21,75 @@ const stages = [
     fill: 3,
   },
 ];
+
+// Pascal's triangle mod 2 — C(n,k) is odd exactly when (n & k) === k.
+// Filling only the odd cells makes the Sierpinski triangle emerge on its own.
+const TRIANGLE_ROWS = 16;
+const triangleRows = Array.from({ length: TRIANGLE_ROWS }, (_, n) =>
+  Array.from({ length: n + 1 }, (_, k) => ({
+    odd: (n & k) === k,
+    edge: k === n,
+  }))
+);
+
+const capabilities = ['Strategy', 'Creative', 'Media', 'Experimentation', 'Measurement'];
 ---
 
 <Layout title="Home" description="Pascal Method is a new kind of growth agency built for ambitious brands.">
   <!-- Hero -->
-  <section class="mx-auto max-w-6xl px-6 pt-24 pb-24">
-    <div class="mb-8 flex items-center gap-3">
-      <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
-      <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">GROWTH, BY DESIGN.</span>
+  <section class="mx-auto max-w-6xl px-6 pt-[clamp(56px,7vw,92px)]">
+    <div class="flex flex-wrap items-center gap-[clamp(40px,5vw,72px)]">
+      <div class="flex min-w-[300px] flex-[1_1_520px] flex-col">
+        <div class="mb-[30px] flex items-center gap-3">
+          <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+          <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">GROWTH, BY DESIGN.</span>
+        </div>
+        <h1 class="text-[clamp(40px,6vw,84px)] leading-[1.02] tracking-[-0.036em]">
+          There's a better way to grow.<br />
+          <span class="text-transparent [-webkit-text-stroke:1.5px_var(--color-ink)]">We're building it.</span>
+        </h1>
+        <p class="prose-body mt-[26px] max-w-xl text-lg leading-[1.6] text-[var(--color-ink)]/62">
+          Pascal Method is a new kind of growth agency built for ambitious brands — bringing strategy, creative, media, experimentation, and measurement together around one obsession: finding better ways to grow.
+        </p>
+        <div class="mt-[38px] flex flex-col gap-1.5 border-l-[3px] border-[var(--color-accent)] py-1 pl-5">
+          <p class="text-[17px] text-[var(--color-ink)]/72">We're not quite ready to show you everything yet.</p>
+          <p class="text-[17px] text-[var(--color-ink)]/72">But we will be soon.</p>
+        </div>
+        <div class="mt-[38px] flex flex-wrap items-center gap-5">
+          <a href="#contact" class="bg-[var(--color-ink)] px-7 py-[17px] text-xs font-medium tracking-widest text-[var(--color-paper)]">GET A TEARDOWN</a>
+          <a href="#method" class="font-mono text-xs tracking-widest text-[var(--color-ink)]/55">SEE THE METHOD &rarr;</a>
+        </div>
+      </div>
+
+      <div class="flex min-w-[280px] flex-[1_1_380px] flex-col items-center gap-5">
+        <div class="flex w-full flex-col items-center gap-[clamp(2px,0.35vw,4px)]">
+          {triangleRows.map((row, n) => (
+            <div
+              class="flex justify-center gap-[clamp(2px,0.35vw,4px)]"
+              style={`animation:pmRise .55s cubic-bezier(.2,.7,.3,1) both;animation-delay:${n * 45}ms`}
+            >
+              {row.map((cell) => (
+                <div
+                  class="h-[clamp(11px,1.5vw,20px)] w-[clamp(11px,1.5vw,20px)] flex-none"
+                  style={`background:${cell.odd ? (cell.edge ? 'var(--color-accent)' : 'var(--color-ink)') : 'rgba(0,0,0,.07)'}`}
+                ></div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <p class="font-mono text-center text-[9.5px] leading-[1.7] tracking-[0.16em] text-[var(--color-ink)]/50">
+          PASCAL'S TRIANGLE, EVERY ODD NUMBER FILLED<br />THE PATTERN APPEARS ON ITS OWN
+        </p>
+      </div>
     </div>
-    <h1 class="max-w-3xl text-[clamp(38px,7vw,74px)] leading-[1.06] tracking-[-0.032em]">
-      There's a better way to grow.<br />
-      <span class="text-[var(--color-ink)]/42">We're building it.</span>
-    </h1>
-    <p class="prose-body mt-8 max-w-xl text-[19px] leading-[1.62] text-[var(--color-ink)]/62">
-      Pascal Method is a new kind of growth agency built for ambitious brands — bringing strategy, creative, media, experimentation, and measurement together around one obsession: finding better ways to grow.
-    </p>
-    <div class="mt-11 flex flex-col gap-[7px] border-l-[3px] border-[var(--color-accent)] py-1 pl-5">
-      <p class="text-[17px] text-[var(--color-ink)]/72">We're not quite ready to show you everything yet.</p>
-      <p class="text-[17px] text-[var(--color-ink)]/72">But we will be soon.</p>
-    </div>
-    <div class="mt-11 flex flex-wrap items-center gap-5">
-      <a href="#contact" class="bg-[var(--color-ink)] px-7 py-[17px] text-xs font-medium tracking-widest text-[var(--color-paper)]">GET A TEARDOWN</a>
-      <a href="#method" class="font-mono text-xs tracking-widest text-[var(--color-ink)]/55">SEE THE METHOD &rarr;</a>
+
+    <div class="mt-[clamp(52px,6vw,84px)] flex flex-wrap gap-5 border-t border-[var(--color-ink)]/16">
+      {capabilities.map((cap, i) => (
+        <div class="flex flex-[1_1_150px] flex-col gap-3 py-[22px]">
+          <span class={`h-1 w-5 ${i === 0 ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-ink)]'}`}></span>
+          <span class="font-mono text-[11px] tracking-[0.16em] text-[var(--color-ink)]/66">{cap.toUpperCase()}</span>
+        </div>
+      ))}
     </div>
   </section>
 
