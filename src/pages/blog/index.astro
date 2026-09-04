@@ -11,9 +11,10 @@ const [featured, ...rest] = allPosts;
 
 const CATEGORIES = ['Measurement', 'Creative', 'Acquisition', 'Retention', 'Operations'];
 const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const ogImage = featured?.coverImage ? urlFor(featured.coverImage).width(1200).height(630).fit('crop').url() : undefined;
 ---
 
-<Layout title="Journal" description="Notes on growing without guessing.">
+<Layout title="Journal" description="Notes on growing without guessing." image={ogImage}>
   <!-- Hero + newsletter -->
   <section class="border-b border-[var(--color-line)]">
     <div class="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-14 px-6 pt-20 pb-16">
@@ -58,7 +59,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month:
   {featured && (
     <section class="mx-auto max-w-6xl px-6 pt-18">
       <a href={`/blog/${featured.slug}`} class="flex flex-wrap items-center gap-14 border-b border-[var(--color-ink)]/12 pb-16">
-        <div class="aspect-[16/10] min-w-[280px] flex-[1_1_480px] bg-[var(--color-surface)]">
+        <div class="aspect-[1200/630] min-w-[280px] flex-[1_1_480px] bg-[var(--color-surface)]">
           {featured.coverImage && <img src={urlFor(featured.coverImage).width(900).url()} alt={featured.title} class="h-full w-full object-cover" />}
         </div>
         <div class="flex min-w-[280px] flex-[1_1_380px] flex-col gap-5">
@@ -89,7 +90,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month:
           data-search-text={`${post.title} ${post.excerpt}`.toLowerCase()}
           class={`flex flex-wrap items-center gap-10 border-b border-[var(--color-ink)]/12 py-11 ${i >= 6 ? 'hidden' : ''}`}
         >
-          <div class="aspect-[16/10] min-w-[220px] flex-[0_1_300px] bg-[var(--color-surface)]">
+          <div class="aspect-[1200/630] min-w-[220px] flex-[0_1_300px] bg-[var(--color-surface)]">
             {post.coverImage && <img src={urlFor(post.coverImage).width(600).url()} alt={post.title} class="h-full w-full object-cover" />}
           </div>
           <div class="flex min-w-[260px] flex-[1_1_340px] flex-col gap-3.5">

@@ -6,9 +6,11 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title: string;
   description?: string;
+  image?: string;
 }
 
-const { title, description = 'A studio that builds brands, campaigns, and digital experiences.' } = Astro.props;
+const { title, description = 'A studio that builds brands, campaigns, and digital experiences.', image } = Astro.props;
+const pageTitle = `${title} · Pascal Method`;
 ---
 
 <html lang="en">
@@ -18,13 +20,24 @@ const { title, description = 'A studio that builds brands, campaigns, and digita
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+
+    <!-- Open Graph / social sharing preview -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={image} />}
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <title>{title} · Pascal Method</title>
+    <title>{pageTitle}</title>
   </head>
   <body class="flex min-h-screen flex-col">
     <Header />

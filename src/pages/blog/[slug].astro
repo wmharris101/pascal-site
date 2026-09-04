@@ -22,9 +22,10 @@ const bodyHtml = renderBody(post.body);
 const headings = extractHeadings(post.body);
 const minutes = readingTime(post.body);
 const shareUrl = new URL(`/blog/${post.slug}`, Astro.site ?? 'https://example.com').toString();
+const ogImage = post.coverImage ? urlFor(post.coverImage).width(1200).height(630).fit('crop').url() : undefined;
 ---
 
-<Layout title={post.title} description={post.excerpt}>
+<Layout title={post.title} description={post.excerpt} image={ogImage}>
   <!-- Reading progress bar -->
   <div class="fixed inset-x-0 top-0 z-20 h-[3px] bg-black/8">
     <div data-progress-bar class="h-[3px] w-0 bg-[var(--color-accent)]"></div>
@@ -134,7 +135,7 @@ const shareUrl = new URL(`/blog/${post.slug}`, Astro.site ?? 'https://example.co
       <div class="grid gap-8 sm:grid-cols-3">
         {related.map((p) => (
           <a href={`/blog/${p.slug}`} class="flex flex-col gap-4.5">
-            <div class="aspect-[16/10] bg-[var(--color-surface)]">
+            <div class="aspect-[1200/630] bg-[var(--color-surface)]">
               {p.coverImage && <img src={urlFor(p.coverImage).width(500).url()} alt={p.title} class="h-full w-full object-cover" />}
             </div>
             <div class="flex flex-col gap-2.5">
