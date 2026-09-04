@@ -14,13 +14,26 @@ code changes, because of the fallback logic in `src/lib/sanity.ts`.
     npm install
     npm run dev
 
-## Connect Sanity (once you have a project)
+## Content (Sanity)
 
-1. Copy `.env.example` to `.env` and fill in `PUBLIC_SANITY_PROJECT_ID`
-   (and `PUBLIC_SANITY_DATASET` if it's not `production`).
-2. Copy the three files in `sanity-schemas/` into your Studio project's
-   schema folder and register them in your Studio's `sanity.config.ts`.
-3. Restart `npm run dev` — content will now come from Sanity.
+The site is connected to the real Pascal Method project (`1dvqx8j5` / `production`)
+via `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` — set as environment
+variables in Vercel, and in a local `.env` file if you run the site locally.
+
+To add or edit content (team members, blog posts, podcast episodes), run the
+Studio in the `studio/` folder:
+
+    cd studio
+    npm install
+    npm run dev
+
+That opens Sanity's editor at localhost:3333. The first time, it'll ask you to
+log into Sanity in your browser. Once you save content there, it's live —
+refresh the Astro site (or wait for the next deploy) to see it.
+
+To get a permanent, hosted editing URL instead of running it locally every
+time, run `npm run deploy` from inside `studio/` — that publishes it to
+something like `pascal-method.sanity.studio`.
 
 ## Project structure
 
@@ -36,4 +49,5 @@ code changes, because of the fallback logic in `src/lib/sanity.ts`.
         index.astro, about.astro, services.astro, team.astro, contact.astro
         blog/index.astro, blog/[slug].astro
         podcast/index.astro, podcast/[slug].astro
-    sanity-schemas/               schema files to drop into your Studio project
+    studio/                        Sanity Studio (the content editor) — see below
+      schemaTypes/                 person, post, podcastShow, podcastEpisode, caseStudy, pressItem

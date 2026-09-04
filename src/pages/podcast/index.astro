@@ -1,31 +1,33 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { sanityFetch } from '../../lib/sanity';
-import { EPISODES_QUERY } from '../../lib/queries';
-import { mockEpisodes } from '../../lib/mockData';
-import type { PodcastEpisode } from '../../lib/types';
+import { sanityFetch, urlFor } from '../../lib/sanity';
+import { SHOWS_QUERY } from '../../lib/queries';
+import { mockShows } from '../../lib/mockData';
+import type { PodcastShow } from '../../lib/types';
 
-const episodes = await sanityFetch<PodcastEpisode[]>(EPISODES_QUERY, {}, mockEpisodes);
-const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const shows = await sanityFetch<PodcastShow[]>(SHOWS_QUERY, {}, mockShows);
 ---
 
 <Layout title="Podcast">
-  <section class="mx-auto max-w-3xl px-6 py-20">
-    <p class="text-sm text-[var(--color-accent)]">Podcast</p>
-    <h1 class="mt-4 text-4xl">Listen in</h1>
-    <ul class="mt-12 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
-      {episodes.map((ep) => (
-        <li class="py-8">
-          <a href={`/podcast/${ep.slug}`} class="block">
-            <p class="text-xs text-[var(--color-ink)]/50">
-              {ep.episodeNumber && `Episode ${ep.episodeNumber} · `}{dateFormatter.format(new Date(ep.publishedAt))}
-            </p>
-            <h2 class="mt-1 text-xl">{ep.title}</h2>
-            <p class="prose-body mt-2 text-[var(--color-ink)]/70">{ep.description}</p>
-          </a>
-        </li>
+  <section class="mx-auto max-w-6xl px-6 py-20">
+    <div class="mb-8 flex items-center gap-3">
+      <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+      <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">PODCASTS</span>
+    </div>
+    <h1 class="text-4xl">Two shows, one obsession.</h1>
+    <div class="mt-12 grid gap-10 sm:grid-cols-2">
+      {shows.map((show) => (
+        <a href={`/podcast/${show.slug}`} class="block">
+          {show.coverArt ? (
+            <img src={urlFor(show.coverArt).width(500).height(500).url()} alt={show.title} class="aspect-square w-full object-cover" />
+          ) : (
+            <div class="aspect-square w-full bg-[var(--color-surface)]" aria-hidden="true"></div>
+          )}
+          <h2 class="mt-4 text-xl">{show.title}</h2>
+          {show.description && <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{show.description}</p>}
+        </a>
       ))}
-      {episodes.length === 0 && <p class="py-8 text-[var(--color-ink)]/60">No episodes yet.</p>}
-    </ul>
+      {shows.length === 0 && <p class="text-[var(--color-ink)]/60">No shows yet.</p>}
+    </div>
   </section>
 </Layout>

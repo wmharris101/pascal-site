@@ -1,0 +1,45 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { sanityFetch, urlFor } from '../../../lib/sanity';
+import { SHOWS_QUERY, EPISODES_BY_SHOW_QUERY } from '../../../lib/queries';
+import { mockShows, mockEpisodes } from '../../../lib/mockData';
+import type { PodcastShow, PodcastEpisode } from '../../../lib/types';
+
+export async function getStaticPaths() {
+  const shows = await sanityFetch<PodcastShow[]>(SHOWS_QUERY, {}, mockShows);
+  return shows.map((show) => ({ params: { show: show.slug } }));
+}
+
+const { show: showSlug } = Astro.params;
+const shows = await sanityFetch<PodcastShow[]>(SHOWS_QUERY, {}, mockShows);
+const show = shows.find((s) => s.slug === showSlug) ?? mockShows[0];
+const episodes = await sanityFetch<PodcastEpisode[]>(EPISODES_BY_SHOW_QUERY, { showSlug }, mockEpisodes);
+const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Layout title={show.title} description={show.description}>
+  <section class="mx-auto max-w-3xl px-6 py-20">
+    <a href="/podcast" class="text-sm text-[var(--color-accent)] hover:underline">All podcasts</a>
+    <div class="mt-6 mb-8 flex items-center gap-3">
+      <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+      <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">PODCAST</span>
+    </div>
+    <h1 class="text-4xl">{show.title}</h1>
+    {show.description && <p class="prose-body mt-4 text-[var(--color-ink)]/70">{show.description}</p>}
+
+    <ul class="mt-12 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+      {episodes.map((ep) => (
+        <li class="py-8">
+          <a href={`/podcast/${showSlug}/${ep.slug}`} class="block">
+            <p class="font-mono text-xs tracking-wide text-[var(--color-ink)]/50">
+              {ep.episodeNumber && `Episode ${ep.episodeNumber} · `}{dateFormatter.format(new Date(ep.publishedAt))}
+            </p>
+            <h2 class="mt-1 text-xl">{ep.title}</h2>
+            <p class="prose-body mt-2 text-[var(--color-ink)]/70">{ep.description}</p>
+          </a>
+        </li>
+      ))}
+      {episodes.length === 0 && <p class="py-8 text-[var(--color-ink)]/60">No episodes yet.</p>}
+    </ul>
+  </section>
+</Layout>

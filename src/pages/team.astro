@@ -1,32 +1,43 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { sanityFetch, urlFor } from '../lib/sanity';
-import { EMPLOYEES_QUERY } from '../lib/queries';
-import { mockEmployees } from '../lib/mockData';
-import type { Employee } from '../lib/types';
+import { PEOPLE_QUERY } from '../lib/queries';
+import { mockPeople } from '../lib/mockData';
+import type { Person } from '../lib/types';
 
-const employees = await sanityFetch<Employee[]>(EMPLOYEES_QUERY, {}, mockEmployees);
+const people = await sanityFetch<Person[]>(PEOPLE_QUERY, {}, mockPeople);
+
+// Pull a short plain-text snippet out of a Portable Text bio for the card view.
+function bioSnippet(bio: any): string {
+  if (!bio || !Array.isArray(bio)) return '';
+  const first = bio.find((block: any) => block._type === 'block');
+  if (!first) return '';
+  return (first.children ?? []).map((c: any) => c.text).join('');
+}
 ---
 
 <Layout title="Team">
   <section class="mx-auto max-w-6xl px-6 py-20">
-    <p class="text-sm text-[var(--color-accent)]">Team</p>
-    <h1 class="mt-4 text-4xl">The people behind the work</h1>
+    <div class="mb-8 flex items-center gap-3">
+      <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+      <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">TEAM</span>
+    </div>
+    <h1 class="text-4xl">The people behind the work</h1>
     <div class="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-      {employees.map((person) => (
+      {people.map((person) => (
         <div>
-          {person.photo ? (
+          {person.headshots && person.headshots[0] ? (
             <img
-              src={urlFor(person.photo).width(400).height(400).url()}
+              src={urlFor(person.headshots[0]).width(400).height(400).url()}
               alt={person.name}
               class="aspect-square w-full object-cover"
             />
           ) : (
-            <div class="aspect-square w-full bg-[var(--color-accent-soft)]" aria-hidden="true"></div>
+            <div class="aspect-square w-full bg-[var(--color-surface)]" aria-hidden="true"></div>
           )}
           <h2 class="mt-4 text-lg">{person.name}</h2>
-          <p class="text-sm text-[var(--color-ink)]/60">{person.role}</p>
-          {person.bio && <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{person.bio}</p>}
+          <p class="font-mono text-xs tracking-wide text-[var(--color-ink)]/55">{person.role}</p>
+          {bioSnippet(person.bio) && <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{bioSnippet(person.bio)}</p>}
         </div>
       ))}
     </div>
