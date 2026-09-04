@@ -1,0 +1,30 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityFetch } from '../../lib/sanity';
+import { POSTS_QUERY } from '../../lib/queries';
+import { mockPosts } from '../../lib/mockData';
+import type { BlogPost } from '../../lib/types';
+
+const posts = await sanityFetch<BlogPost[]>(POSTS_QUERY, {}, mockPosts);
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Layout title="Blog">
+  <section class="mx-auto max-w-3xl px-6 py-20">
+    <p class="text-sm text-[var(--color-accent)]">Blog</p>
+    <h1 class="mt-4 text-4xl">Notes from the studio</h1>
+    <ul class="mt-12 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+      {posts.map((post) => (
+        <li class="py-8">
+          <a href={`/blog/${post.slug}`} class="block">
+            <p class="text-xs text-[var(--color-ink)]/50">{dateFormatter.format(new Date(post.publishedAt))}</p>
+            <h2 class="mt-1 text-xl">{post.title}</h2>
+            <p class="prose-body mt-2 text-[var(--color-ink)]/70">{post.excerpt}</p>
+          </a>
+        </li>
+      ))}
+      {posts.length === 0 && <p class="py-8 text-[var(--color-ink)]/60">No posts yet.</p>}
+    </ul>
+  </section>
+</Layout>

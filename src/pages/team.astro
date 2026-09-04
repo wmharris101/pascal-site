@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { sanityFetch, urlFor } from '../lib/sanity';
+import { EMPLOYEES_QUERY } from '../lib/queries';
+import { mockEmployees } from '../lib/mockData';
+import type { Employee } from '../lib/types';
+
+const employees = await sanityFetch<Employee[]>(EMPLOYEES_QUERY, {}, mockEmployees);
+---
+
+<Layout title="Team">
+  <section class="mx-auto max-w-6xl px-6 py-20">
+    <p class="text-sm text-[var(--color-accent)]">Team</p>
+    <h1 class="mt-4 text-4xl">The people behind the work</h1>
+    <div class="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      {employees.map((person) => (
+        <div>
+          {person.photo ? (
+            <img
+              src={urlFor(person.photo).width(400).height(400).url()}
+              alt={person.name}
+              class="aspect-square w-full object-cover"
+            />
+          ) : (
+            <div class="aspect-square w-full bg-[var(--color-accent-soft)]" aria-hidden="true"></div>
+          )}
+          <h2 class="mt-4 text-lg">{person.name}</h2>
+          <p class="text-sm text-[var(--color-ink)]/60">{person.role}</p>
+          {person.bio && <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{person.bio}</p>}
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>

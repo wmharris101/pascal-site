@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityFetch } from '../../lib/sanity';
+import { EPISODES_QUERY, EPISODE_BY_SLUG_QUERY } from '../../lib/queries';
+import { mockEpisodes } from '../../lib/mockData';
+import type { PodcastEpisode } from '../../lib/types';
+
+export async function getStaticPaths() {
+  const episodes = await sanityFetch<PodcastEpisode[]>(EPISODES_QUERY, {}, mockEpisodes);
+  return episodes.map((ep) => ({
+    params: { slug: ep.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const fallback = mockEpisodes.find((e) => e.slug === slug) ?? mockEpisodes[0];
+const episode = await sanityFetch<PodcastEpisode>(EPISODE_BY_SLUG_QUERY, { slug }, fallback);
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Layout title={episode.title} description={episode.description}>
+  <article class="mx-auto max-w-2xl px-6 py-20">
+    <a href="/podcast" class="text-sm text-[var(--color-accent)] hover:underline">Back to podcast</a>
+    <p class="mt-6 text-xs text-[var(--color-ink)]/50">
+      {episode.episodeNumber && `Episode ${episode.episodeNumber} · `}{dateFormatter.format(new Date(episode.publishedAt))}
+    </p>
+    <h1 class="mt-2 text-4xl">{episode.title}</h1>
+    <p class="prose-body mt-6 text-[var(--color-ink)]/80">{episode.description}</p>
+    {episode.audioEmbedUrl && (
+      <div class="mt-8">
+        <iframe
+          src={episode.audioEmbedUrl}
+          width="100%"
+          height="152"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          loading="lazy"
+          title={`Listen to ${episode.title}`}
+        ></iframe>
+      </div>
+    )}
+  </article>
+</Layout>
