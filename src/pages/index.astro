@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { sanityFetch } from '../lib/sanity';
+import { POSTS_QUERY, EPISODES_QUERY } from '../lib/queries';
+import { mockPosts, mockEpisodes } from '../lib/mockData';
+import type { BlogPost, PodcastEpisode } from '../lib/types';
+
+const posts = (await sanityFetch<BlogPost[]>(POSTS_QUERY, {}, mockPosts)).slice(0, 3);
+const episodes = (await sanityFetch<PodcastEpisode[]>(EPISODES_QUERY, {}, mockEpisodes)).slice(0, 2);
+---
+
+<Layout title="Home">
+  <section class="mx-auto max-w-6xl px-6 pt-20 pb-24">
+    <p class="text-sm text-[var(--color-accent)]">Strategy, brand, and digital</p>
+    <h1 class="mt-4 max-w-2xl text-5xl leading-tight sm:text-6xl">
+      We build brands people actually remember.
+    </h1>
+    <p class="prose-body mt-6 text-lg text-[var(--color-ink)]/75">
+      Agency Name is a small studio that partners with founders and marketing
+      teams on brand, campaigns, and the digital products that carry them.
+    </p>
+    <div class="mt-8 flex gap-4">
+      <a href="/contact" class="rounded-sm bg-[var(--color-accent)] px-5 py-3 text-sm text-white hover:opacity-90">
+        Start a project
+      </a>
+      <a href="/services" class="rounded-sm border border-[var(--color-line)] px-5 py-3 text-sm hover:border-[var(--color-accent)]">
+        See what we do
+      </a>
+    </div>
+  </section>
+
+  <section class="border-t border-[var(--color-line)] bg-[var(--color-accent-soft)]">
+    <div class="mx-auto max-w-6xl px-6 py-16">
+      <div class="flex items-baseline justify-between">
+        <h2 class="text-2xl">From the blog</h2>
+        <a href="/blog" class="text-sm text-[var(--color-accent)] hover:underline">All posts</a>
+      </div>
+      <div class="mt-8 grid gap-8 sm:grid-cols-3">
+        {posts.map((post) => (
+          <a href={`/blog/${post.slug}`} class="block">
+            <h3 class="text-lg">{post.title}</h3>
+            <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{post.excerpt}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 py-16">
+    <div class="flex items-baseline justify-between">
+      <h2 class="text-2xl">Latest episodes</h2>
+      <a href="/podcast" class="text-sm text-[var(--color-accent)] hover:underline">All episodes</a>
+    </div>
+    <div class="mt-8 grid gap-8 sm:grid-cols-2">
+      {episodes.map((ep) => (
+        <a href={`/podcast/${ep.slug}`} class="block border-l-2 border-[var(--color-line)] pl-5">
+          {ep.episodeNumber && <p class="text-xs text-[var(--color-ink)]/50">Episode {ep.episodeNumber}</p>}
+          <h3 class="mt-1 text-lg">{ep.title}</h3>
+          <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{ep.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

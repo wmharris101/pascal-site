@@ -1,0 +1,38 @@
+---
+const navItems = [
+  { href: '/about', label: 'About' },
+  { href: '/services', label: 'Services' },
+  { href: '/team', label: 'Team' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/podcast', label: 'Podcast' },
+  { href: '/contact', label: 'Contact' },
+];
+const currentPath = Astro.url.pathname;
+---
+
+<header class="border-b border-[var(--color-line)]">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+    <a href="/" class="font-display text-lg text-[var(--color-ink)]">Agency Name</a>
+    <nav aria-label="Primary">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        {navItems.map((item) => {
+          const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
+          return (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  'transition-colors hover:text-[var(--color-accent)]',
+                  isActive ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]/80',
+                ]}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  </div>
+</header>

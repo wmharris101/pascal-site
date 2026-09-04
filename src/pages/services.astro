@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const services = [
+  { name: 'Brand strategy & identity', description: 'Positioning, naming, visual identity, and the guidelines that keep it consistent.' },
+  { name: 'Campaigns', description: 'Concept through production for launches, seasonal pushes, and always-on marketing.' },
+  { name: 'Digital product & web', description: 'Marketing sites, product design, and the occasional full build like this one.' },
+  { name: 'Content & podcast production', description: 'Editorial, video, and audio made on a schedule you can actually keep.' },
+];
+---
+
+<Layout title="Services">
+  <section class="mx-auto max-w-3xl px-6 py-20">
+    <p class="text-sm text-[var(--color-accent)]">Services</p>
+    <h1 class="mt-4 text-4xl">What we do</h1>
+    <ul class="mt-12 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
+      {services.map((service) => (
+        <li class="py-8">
+          <h2 class="text-xl">{service.name}</h2>
+          <p class="prose-body mt-2 text-[var(--color-ink)]/70">{service.description}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>

@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/*
+  NOTE: This is a neutral placeholder palette so the site is fully
+  functional and reasonably presentable from day one. Once we know
+  more about the agency's brand (name, focus, personality, any
+  existing colors/logo), this token set is the place to swap in a
+  real, distinctive visual identity.
+*/
+@theme {
+  --font-display: 'Newsreader', ui-serif, Georgia, serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #1c1f1d;
+  --color-paper: #fbfaf8;
+  --color-accent: #2f4a3d;
+  --color-accent-soft: #e7ede9;
+  --color-line: #e2e0da;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.prose-body :where(p) {
+  max-width: 68ch;
+  line-height: 1.7;
+}
