@@ -1,64 +1,183 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { sanityFetch } from '../lib/sanity';
-import { POSTS_QUERY, EPISODES_QUERY } from '../lib/queries';
-import { mockPosts, mockEpisodes } from '../lib/mockData';
-import type { BlogPost, PodcastEpisode } from '../lib/types';
 
-const posts = (await sanityFetch<BlogPost[]>(POSTS_QUERY, {}, mockPosts)).slice(0, 3);
-const episodes = (await sanityFetch<PodcastEpisode[]>(EPISODES_QUERY, {}, mockEpisodes)).slice(0, 2);
+const stages = [
+  {
+    n: '01 — AUDIT',
+    title: 'We find where the money leaks',
+    body: 'A full teardown of account structure, creative, and measurement before a dollar moves. You keep the findings whether or not we work together.',
+    fill: 1,
+  },
+  {
+    n: '02 — BUILD',
+    title: 'We rebuild the account as a system',
+    body: 'Clean structure, a creative testing cadence, and measurement you can defend in a board meeting. Built to be handed over, not hoarded.',
+    fill: 2,
+  },
+  {
+    n: '03 — COMPOUND',
+    title: 'We compound what works',
+    body: 'Winning creative gets scaled, losing spend gets cut weekly. The account gets narrower and more efficient every month it runs.',
+    fill: 3,
+  },
+];
 ---
 
-<Layout title="Home">
-  <section class="mx-auto max-w-6xl px-6 pt-20 pb-24">
-    <p class="text-sm text-[var(--color-accent)]">Strategy, brand, and digital</p>
-    <h1 class="mt-4 max-w-2xl text-5xl leading-tight sm:text-6xl">
-      We build brands people actually remember.
+<Layout title="Home" description="Pascal Method is a new kind of growth agency built for ambitious brands.">
+  <!-- Hero -->
+  <section class="mx-auto max-w-6xl px-6 pt-24 pb-24">
+    <div class="mb-8 flex items-center gap-3">
+      <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+      <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">GROWTH, BY DESIGN.</span>
+    </div>
+    <h1 class="max-w-3xl text-[clamp(38px,7vw,74px)] leading-[1.06] tracking-[-0.032em]">
+      There's a better way to grow.<br />
+      <span class="text-[var(--color-ink)]/42">We're building it.</span>
     </h1>
-    <p class="prose-body mt-6 text-lg text-[var(--color-ink)]/75">
-      Agency Name is a small studio that partners with founders and marketing
-      teams on brand, campaigns, and the digital products that carry them.
+    <p class="prose-body mt-8 max-w-xl text-[19px] leading-[1.62] text-[var(--color-ink)]/62">
+      Pascal Method is a new kind of growth agency built for ambitious brands — bringing strategy, creative, media, experimentation, and measurement together around one obsession: finding better ways to grow.
     </p>
-    <div class="mt-8 flex gap-4">
-      <a href="/contact" class="rounded-sm bg-[var(--color-accent)] px-5 py-3 text-sm text-white hover:opacity-90">
-        Start a project
-      </a>
-      <a href="/services" class="rounded-sm border border-[var(--color-line)] px-5 py-3 text-sm hover:border-[var(--color-accent)]">
-        See what we do
-      </a>
+    <div class="mt-11 flex flex-col gap-[7px] border-l-[3px] border-[var(--color-accent)] py-1 pl-5">
+      <p class="text-[17px] text-[var(--color-ink)]/72">We're not quite ready to show you everything yet.</p>
+      <p class="text-[17px] text-[var(--color-ink)]/72">But we will be soon.</p>
+    </div>
+    <div class="mt-11 flex flex-wrap items-center gap-5">
+      <a href="#contact" class="bg-[var(--color-ink)] px-7 py-[17px] text-xs font-medium tracking-widest text-[var(--color-paper)]">GET A TEARDOWN</a>
+      <a href="#method" class="font-mono text-xs tracking-widest text-[var(--color-ink)]/55">SEE THE METHOD &rarr;</a>
     </div>
   </section>
 
-  <section class="border-t border-[var(--color-line)] bg-[var(--color-accent-soft)]">
-    <div class="mx-auto max-w-6xl px-6 py-16">
-      <div class="flex items-baseline justify-between">
-        <h2 class="text-2xl">From the blog</h2>
-        <a href="/blog" class="text-sm text-[var(--color-accent)] hover:underline">All posts</a>
+  <!-- Why Pascal -->
+  <section id="why" class="border-t border-[var(--color-line)] bg-[var(--color-surface)]">
+    <div class="mx-auto max-w-6xl px-6 pt-24">
+      <div class="mb-8 flex items-center gap-3">
+        <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+        <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">WHY PASCAL?</span>
       </div>
-      <div class="mt-8 grid gap-8 sm:grid-cols-3">
-        {posts.map((post) => (
-          <a href={`/blog/${post.slug}`} class="block">
-            <h3 class="text-lg">{post.title}</h3>
-            <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{post.excerpt}</p>
-          </a>
+      <h2 class="mb-16 max-w-2xl text-[clamp(30px,5vw,56px)] leading-[1.1] tracking-[-0.03em]">
+        Some names are invented.<br /><span class="text-[var(--color-ink)]/42">This one was discovered.</span>
+      </h2>
+
+      <div class="flex flex-wrap items-start gap-16 pb-24">
+        <figure class="m-0 flex min-w-[260px] flex-[0_1_420px] flex-col gap-[14px]">
+          <img src="/images/blaise-pascal-engraving.jpg" alt="Engraved portrait of Blaise Pascal" class="block w-full grayscale contrast-[1.04] mix-blend-multiply" />
+          <figcaption class="font-mono text-[9.5px] leading-[1.7] tracking-[0.13em] text-[var(--color-ink)]/62">
+            BLAISE PASCAL &middot; 1623&ndash;1662<br />ENGRAVING AFTER THE PORTRAIT BY DELINCK
+          </figcaption>
+        </figure>
+
+        <div class="flex min-w-[280px] flex-[1_1_340px] flex-col gap-[30px] pt-1.5">
+          <p class="m-0 text-[clamp(21px,2.4vw,27px)] leading-[1.42] tracking-[-0.018em]">Blaise Pascal spent his life thinking about uncertainty.</p>
+          <div class="flex flex-wrap gap-[10px]">
+            {['MATHEMATICIAN', 'INVENTOR', 'PHILOSOPHER', 'SCIENTIST'].map((tag) => (
+              <span class="font-mono border border-[var(--color-ink)]/22 px-[14px] py-2 text-[10.5px] tracking-[0.14em] text-[var(--color-ink)]/65">{tag}</span>
+            ))}
+          </div>
+          <p class="prose-body m-0 max-w-lg text-[17px] leading-[1.68] text-[var(--color-ink)]/68">
+            He helped lay the foundations of probability theory — giving us new ways to make rational decisions when outcomes aren't guaranteed.
+          </p>
+          <p class="prose-body m-0 max-w-lg text-[17px] leading-[1.68] text-[var(--color-ink)]/68">
+            He experimented relentlessly. Built things. Challenged assumptions. Combined mathematics with an unusually deep understanding of human nature.
+          </p>
+          <p class="m-0 max-w-lg text-[21px] leading-[1.52] tracking-[-0.012em]">Nearly four centuries later, that sounds remarkably familiar.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tensions panel -->
+    <div class="bg-[var(--color-ink)] text-[var(--color-paper)]">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-[72px] px-6 py-22">
+        <div class="flex min-w-[280px] flex-[1_1_340px] flex-col gap-[34px]">
+          <p class="m-0 max-w-lg text-2xl leading-[1.5] tracking-[-0.015em] text-[rgba(246,244,239,0.72)]">Because marketing lives in the same tension:</p>
+          <div class="flex flex-col border-t border-[rgba(246,244,239,0.2)]">
+            {[
+              'Data and intuition.',
+              'Probability and creativity.',
+              'People and mathematics.',
+              "What we know — and what we haven't tested yet.",
+            ].map((line) => (
+              <div class="flex items-center gap-[18px] border-b border-[rgba(246,244,239,0.2)] py-[19px]">
+                <span class="h-[9px] w-[9px] flex-none bg-[var(--color-accent)]"></span>
+                <span class="text-[22px] leading-[1.2] tracking-[-0.015em]">{line}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <figure class="m-0 flex min-w-[260px] flex-[0_1_470px] flex-col gap-4">
+          <div class="bg-[var(--color-paper)] p-[22px]">
+            <img src="/images/triangle-arithmetique.jpg" alt="Pascal's Traité du triangle arithmétique" class="block w-full grayscale contrast-[1.06] mix-blend-multiply" />
+          </div>
+          <figcaption class="font-mono text-[9.5px] leading-[1.7] tracking-[0.13em] text-[rgba(246,244,239,0.68)]">
+            TRAITÉ DU TRIANGLE ARITHMÉTIQUE<br />WRITTEN 1654 &middot; THE SHAPE OUR MARK COMES FROM
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- That's Pascal -->
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-16 px-6 pt-24 pb-[110px]">
+      <figure class="m-0 flex min-w-[200px] flex-[0_1_240px] flex-col gap-[14px]">
+        <img src="/images/pascal-manuscript.jpg" alt="Manuscript fragment in Pascal's hand" class="block w-full grayscale contrast-[1.06] mix-blend-multiply" />
+        <figcaption class="font-mono text-[9.5px] leading-[1.7] tracking-[0.13em] text-[var(--color-ink)]/62">MANUSCRIPT FRAGMENT<br />IN PASCAL'S HAND</figcaption>
+      </figure>
+      <div class="flex min-w-[280px] flex-[1_1_340px] flex-col gap-[30px]">
+        <p class="m-0 max-w-xl text-[clamp(22px,2.6vw,30px)] leading-[1.36] tracking-[-0.022em]">
+          Growth isn't about knowing exactly what will happen. It's about getting better at knowing what to do next.
+        </p>
+        <div class="flex items-center gap-[22px]">
+          <span class="funnel-mark" style="--mark-unit: 8px;"><span></span><span></span><span></span><span></span></span>
+          <span class="text-[clamp(30px,4.4vw,46px)] tracking-[-0.03em]">That's Pascal.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method -->
+  <section id="method" class="bg-[var(--color-ink)] text-[var(--color-paper)]">
+    <div class="mx-auto max-w-6xl px-6 pt-24 pb-[110px]">
+      <div class="mb-6 flex items-center gap-3">
+        <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+        <span class="font-mono text-[11px] tracking-[0.22em] text-[rgba(246,244,239,0.55)]">THE METHOD</span>
+      </div>
+      <h2 class="mb-17 max-w-2xl text-[clamp(28px,4.4vw,46px)] leading-[1.14] tracking-[-0.028em]">
+        Three stages. Each one narrows the spend to what actually converts.
+      </h2>
+      <div class="grid gap-13 sm:grid-cols-3">
+        {stages.map((stage) => (
+          <div class="flex flex-col gap-5">
+            <div class="flex flex-col gap-1">
+              {[1, 2, 3].map((bar) => (
+                <span
+                  class="h-[7px]"
+                  style={`width:${64 - (bar - 1) * 16}px;background:${bar === stage.fill ? '#f6f4ef' : 'rgba(246,244,239,0.35)'}`}
+                ></span>
+              ))}
+            </div>
+            <p class="font-mono m-0 text-[11px] tracking-[0.18em] text-[var(--color-accent)]">{stage.n}</p>
+            <h3 class="m-0 text-[25px] leading-[1.22] tracking-[-0.02em]">{stage.title}</h3>
+            <p class="prose-body m-0 text-[15px] leading-[1.66] text-[rgba(246,244,239,0.62)]">{stage.body}</p>
+          </div>
         ))}
       </div>
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-6 py-16">
-    <div class="flex items-baseline justify-between">
-      <h2 class="text-2xl">Latest episodes</h2>
-      <a href="/podcast" class="text-sm text-[var(--color-accent)] hover:underline">All episodes</a>
-    </div>
-    <div class="mt-8 grid gap-8 sm:grid-cols-2">
-      {episodes.map((ep) => (
-        <a href={`/podcast/${ep.slug}`} class="block border-l-2 border-[var(--color-line)] pl-5">
-          {ep.episodeNumber && <p class="text-xs text-[var(--color-ink)]/50">Episode {ep.episodeNumber}</p>}
-          <h3 class="mt-1 text-lg">{ep.title}</h3>
-          <p class="prose-body mt-2 text-sm text-[var(--color-ink)]/70">{ep.description}</p>
-        </a>
-      ))}
+  <!-- Contact -->
+  <section id="contact" class="border-t border-[var(--color-line)]">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-15 px-6 pt-24 pb-26">
+      <div class="flex max-w-xl flex-col gap-[26px]">
+        <h2 class="m-0 text-[clamp(28px,4.4vw,46px)] leading-[1.12] tracking-[-0.028em]">Start with the teardown.</h2>
+        <p class="prose-body m-0 text-[17px] leading-[1.62] text-[var(--color-ink)]/62">
+          Send us access and we'll return a written audit of your account inside a week. No pitch deck, no retainer conversation until you've read it.
+        </p>
+        <div class="flex flex-wrap items-center gap-[18px]">
+          <a href="mailto:hello@pascalmethod.co?subject=Teardown%20request" class="bg-[var(--color-ink)] px-7 py-[17px] text-xs font-medium tracking-widest text-[var(--color-paper)]">
+            REQUEST A TEARDOWN
+          </a>
+          <a href="mailto:hello@pascalmethod.co" class="font-mono text-xs tracking-widest text-[var(--color-ink)]/55">hello@pascalmethod.co</a>
+        </div>
+      </div>
+      <span class="funnel-mark pt-3" style="--mark-unit: 11px;"><span></span><span></span><span></span><span></span></span>
     </div>
   </section>
 </Layout>

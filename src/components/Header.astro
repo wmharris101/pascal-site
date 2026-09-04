@@ -1,38 +1,26 @@
 ---
-const navItems = [
-  { href: '/about', label: 'About' },
-  { href: '/services', label: 'Services' },
-  { href: '/team', label: 'Team' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/podcast', label: 'Podcast' },
-  { href: '/contact', label: 'Contact' },
-];
-const currentPath = Astro.url.pathname;
+// On the homepage these are in-page anchors; elsewhere they link back to the
+// homepage sections. The real sub-pages (Team/Blog/Podcast) are separate
+// routes since that content is structured, per-item data from Sanity.
+const isHome = Astro.url.pathname === '/';
+const sectionLink = (hash: string) => (isHome ? hash : `/${hash}`);
 ---
 
-<header class="border-b border-[var(--color-line)]">
-  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-    <a href="/" class="font-display text-lg text-[var(--color-ink)]">Agency Name</a>
-    <nav aria-label="Primary">
-      <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        {navItems.map((item) => {
-          const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
-          return (
-            <li>
-              <a
-                href={item.href}
-                class:list={[
-                  'transition-colors hover:text-[var(--color-accent)]',
-                  isActive ? 'text-[var(--color-accent)]' : 'text-[var(--color-ink)]/80',
-                ]}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+<header class="sticky top-0 z-10 border-b border-[var(--color-line)] bg-[var(--color-paper)]/92 backdrop-blur-sm">
+  <div class="mx-auto flex min-h-[78px] max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3">
+    <a href="/" class="flex items-center gap-3">
+      <span class="funnel-mark" style="--mark-unit: 4px;"><span></span><span></span><span></span><span></span></span>
+      <span class="font-logo text-xl">Pascal Method</span>
+    </a>
+    <nav class="flex flex-wrap items-center gap-7" aria-label="Primary">
+      <a href={sectionLink('#why')} class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Why Pascal</a>
+      <a href={sectionLink('#method')} class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Method</a>
+      <a href="/team" class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Team</a>
+      <a href="/blog" class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Blog</a>
+      <a href="/podcast" class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Podcast</a>
+      <a href={sectionLink('#contact')} class="bg-[var(--color-ink)] px-[18px] py-[11px] text-[11px] font-medium tracking-widest text-[var(--color-paper)]">
+        GET A TEARDOWN
+      </a>
     </nav>
   </div>
 </header>
