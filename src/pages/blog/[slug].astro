@@ -1,36 +1,202 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { sanityFetch } from '../../lib/sanity';
+import { sanityFetch, urlFor } from '../../lib/sanity';
 import { POSTS_QUERY, POST_BY_SLUG_QUERY } from '../../lib/queries';
 import { mockPosts } from '../../lib/mockData';
 import type { BlogPost } from '../../lib/types';
-import { toHTML } from '@portabletext/to-html';
+import { renderBody, extractHeadings, readingTime } from '../../lib/portableText';
 
 export async function getStaticPaths() {
   const posts = await sanityFetch<BlogPost[]>(POSTS_QUERY, {}, mockPosts);
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-  }));
+  return posts.map((post) => ({ params: { slug: post.slug } }));
 }
 
 const { slug } = Astro.params;
 const fallback = mockPosts.find((p) => p.slug === slug) ?? mockPosts[0];
 const post = await sanityFetch<BlogPost>(POST_BY_SLUG_QUERY, { slug }, fallback);
+const allPosts = await sanityFetch<BlogPost[]>(POSTS_QUERY, {}, mockPosts);
+const related = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
-const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-const bodyHtml = post.body ? toHTML(post.body) : '';
+const dateFormatter = new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+const bodyHtml = renderBody(post.body);
+const headings = extractHeadings(post.body);
+const minutes = readingTime(post.body);
+const shareUrl = new URL(`/blog/${post.slug}`, Astro.site ?? 'https://example.com').toString();
 ---
 
 <Layout title={post.title} description={post.excerpt}>
-  <article class="mx-auto max-w-2xl px-6 py-20">
-    <a href="/blog" class="text-sm text-[var(--color-accent)] hover:underline">Back to blog</a>
-    <p class="mt-6 text-xs text-[var(--color-ink)]/50">{dateFormatter.format(new Date(post.publishedAt))}</p>
-    <h1 class="mt-2 text-4xl">{post.title}</h1>
-    {post.author && <p class="mt-3 text-sm text-[var(--color-ink)]/60">By {post.author.name}</p>}
-    {bodyHtml ? (
-      <div class="prose-body mt-10 space-y-4 text-[var(--color-ink)]/85" set:html={bodyHtml} />
-    ) : (
-      <p class="prose-body mt-10 text-[var(--color-ink)]/70">{post.excerpt}</p>
+  <!-- Reading progress bar -->
+  <div class="fixed inset-x-0 top-0 z-20 h-[3px] bg-black/8">
+    <div data-progress-bar class="h-[3px] w-0 bg-[var(--color-accent)]"></div>
+  </div>
+
+  <article>
+    <div class="mx-auto max-w-6xl px-6 pt-14">
+      <a href="/blog" class="font-mono inline-flex items-center gap-2 text-[11px] tracking-[0.14em] text-[var(--color-ink)]/55">&larr; THE JOURNAL</a>
+
+      <div class="mt-8 mb-6 flex flex-wrap items-center gap-3">
+        {post.category && <span class="font-mono bg-[var(--color-accent)] px-[13px] py-[7px] text-[10px] tracking-[0.14em] text-white">{post.category.toUpperCase()}</span>}
+        <span class="font-mono text-[10.5px] tracking-[0.14em] text-[var(--color-ink)]/55">{dateFormatter.format(new Date(post.publishedAt)).toUpperCase()}</span>
+        <span class="text-[var(--color-ink)]/30">&middot;</span>
+        <span class="font-mono text-[10.5px] tracking-[0.14em] text-[var(--color-ink)]/55">{minutes} MIN READ</span>
+      </div>
+
+      <h1 class="max-w-4xl text-[clamp(34px,5vw,62px)] leading-[1.07] tracking-[-0.032em]">{post.title}</h1>
+      {post.excerpt && <p class="prose-body mt-8 max-w-2xl text-[clamp(18px,2vw,22px)] leading-[1.56] text-[var(--color-ink)]/62">{post.excerpt}</p>}
+
+      {post.author && (
+        <div class="mt-10 flex flex-wrap items-center gap-4 pb-11">
+          {post.author.headshots?.[0] ? (
+            <img src={urlFor(post.author.headshots[0]).width(96).height(96).url()} alt={post.author.name} class="h-12 w-12 flex-none rounded-full object-cover" />
+          ) : (
+            <div class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[var(--color-surface)]"></div>
+          )}
+          <div class="flex flex-col gap-1">
+            <p class="text-sm font-medium">{post.author.name}</p>
+            {post.author.role && <p class="font-mono text-[10.5px] tracking-[0.12em] text-[var(--color-ink)]/55">{post.author.role.toUpperCase()} &middot; PASCAL METHOD</p>}
+          </div>
+        </div>
+      )}
+    </div>
+
+    {post.coverImage && (
+      <div class="bg-[var(--color-ink)]">
+        <div class="mx-auto max-w-6xl px-6">
+          <img src={urlFor(post.coverImage).width(1600).url()} alt={post.title} class="aspect-[21/9] w-full object-cover" />
+        </div>
+      </div>
     )}
+
+    <div class="mx-auto flex max-w-6xl flex-wrap items-start gap-16 px-6 pt-16">
+      <!-- Sidebar -->
+      <aside class="sticky top-26 flex min-w-[200px] flex-[0_1_240px] flex-col gap-7">
+        {headings.length > 0 && (
+          <div class="flex flex-col gap-3.5">
+            <p class="font-mono text-[10px] tracking-[0.2em] text-[var(--color-ink)]/45">CONTENTS</p>
+            <div class="flex flex-col gap-2.5 border-l border-[var(--color-ink)]/14 pl-4">
+              {headings.map((h) => (
+                <a href={`#${h.id}`} class="text-[13px] leading-tight text-[var(--color-ink)]/66">{h.text}</a>
+              ))}
+            </div>
+          </div>
+        )}
+        <div class="flex flex-col gap-3">
+          <p class="font-mono text-[10px] tracking-[0.2em] text-[var(--color-ink)]/45">SHARE</p>
+          <div class="flex flex-wrap gap-2">
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener" class="font-mono border border-[var(--color-ink)]/20 px-3 py-2 text-[10px] tracking-[0.1em] text-[var(--color-ink)]/66">LINKEDIN</a>
+            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener" class="font-mono border border-[var(--color-ink)]/20 px-3 py-2 text-[10px] tracking-[0.1em] text-[var(--color-ink)]/66">X</a>
+            <button type="button" data-copy-link={shareUrl} class="font-mono border border-[var(--color-ink)]/20 px-3 py-2 text-[10px] tracking-[0.1em] text-[var(--color-ink)]/66">COPY LINK</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Body -->
+      <div class="flex min-w-[300px] max-w-[720px] flex-[1_1_560px] flex-col gap-8">
+        {post.keyTakeaways && post.keyTakeaways.length > 0 && (
+          <div class="flex flex-col gap-4 border-l-4 border-[var(--color-accent)] bg-[var(--color-surface)] px-8 py-7">
+            <p class="font-mono text-[10px] tracking-[0.2em] text-[var(--color-ink)]/55">THE SHORT VERSION</p>
+            <div class="flex flex-col gap-3">
+              {post.keyTakeaways.map((point) => (
+                <div class="flex items-start gap-3.5">
+                  <span class="mt-2 h-2 w-2 flex-none bg-[var(--color-ink)]"></span>
+                  <p class="text-[16px] leading-[1.55] text-[var(--color-ink)]/78">{point}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div class="post-body flex flex-col gap-6" set:html={bodyHtml} />
+
+        {post.author && (
+          <div class="mt-2 flex flex-wrap items-start gap-6 bg-[var(--color-surface)] px-8 py-7">
+            {post.author.headshots?.[0] ? (
+              <img src={urlFor(post.author.headshots[0]).width(128).height(128).url()} alt={post.author.name} class="h-16 w-16 flex-none rounded-full object-cover" />
+            ) : (
+              <div class="h-16 w-16 flex-none rounded-full bg-[var(--color-line)]"></div>
+            )}
+            <div class="flex min-w-[240px] flex-[1_1_300px] flex-col gap-2.5">
+              <p class="text-base font-medium">{post.author.name}</p>
+              {post.author.role && <p class="font-mono text-[10.5px] tracking-[0.12em] text-[var(--color-ink)]/55">{post.author.role.toUpperCase()} &middot; PASCAL METHOD</p>}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   </article>
+
+  {related.length > 0 && (
+    <section class="mx-auto max-w-6xl px-6 pt-24">
+      <div class="mb-10 flex items-center gap-3">
+        <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+        <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">KEEP READING</span>
+      </div>
+      <div class="grid gap-8 sm:grid-cols-3">
+        {related.map((p) => (
+          <a href={`/blog/${p.slug}`} class="flex flex-col gap-4.5">
+            <div class="aspect-[16/10] bg-[var(--color-surface)]">
+              {p.coverImage && <img src={urlFor(p.coverImage).width(500).url()} alt={p.title} class="h-full w-full object-cover" />}
+            </div>
+            <div class="flex flex-col gap-2.5">
+              {p.category && <p class="font-mono text-[10px] tracking-[0.14em] text-[var(--color-ink)]/55">{p.category.toUpperCase()}</p>}
+              <p class="text-[21px] leading-[1.26] tracking-[-0.018em]">{p.title}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="mt-24 bg-[var(--color-ink)] text-[var(--color-paper)]">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-16 px-6 py-22">
+      <div class="flex min-w-[280px] flex-[1_1_400px] flex-col gap-5">
+        <h2 class="max-w-lg text-[clamp(28px,3.6vw,42px)] leading-[1.14] tracking-[-0.026em]">One email a month. Only when we've learned something.</h2>
+        <p class="prose-body max-w-md text-[rgba(246,244,239,0.62)]">No roundups, no reposted platform announcements. If a month goes by without a real finding, you won't hear from us.</p>
+      </div>
+      <form class="flex min-w-[280px] flex-[0_1_420px] flex-col gap-3.5" data-newsletter>
+        <div class="flex items-stretch border-b-2 border-[var(--color-paper)]">
+          <input type="email" required placeholder="you@brand.com" class="min-w-0 flex-1 bg-transparent py-3.5 text-base text-[var(--color-paper)] outline-none" />
+          <button type="submit" class="flex-none py-3.5 pl-4 text-[11px] font-medium tracking-widest text-[var(--color-accent)]">SUBSCRIBE</button>
+        </div>
+        <p class="font-mono text-[11px] tracking-[0.06em] text-[rgba(246,244,239,0.45)]">UNSUBSCRIBE IN ONE CLICK, ALWAYS.</p>
+      </form>
+    </div>
+  </section>
 </Layout>
+
+<style>
+  /* H2/blockquote/etc inside the rendered Portable Text body inherit design tokens via inline styles from portableText.ts */
+  .post-body :global(figure img) {
+    max-width: 100%;
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLDivElement>('[data-progress-bar]');
+  function updateProgress() {
+    if (!bar) return;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
+    bar.style.width = pct.toFixed(2) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-link]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const url = btn.getAttribute('data-copy-link') ?? '';
+      await navigator.clipboard.writeText(url);
+      const original = btn.textContent;
+      btn.textContent = 'COPIED';
+      setTimeout(() => (btn.textContent = original), 1500);
+    });
+  });
+
+  document.querySelectorAll<HTMLFormElement>('[data-newsletter]').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert("Newsletter signup isn't connected to an email provider yet.");
+    });
+  });
+</script>

@@ -10,8 +10,10 @@ export const mockPosts: BlogPost[] = [
     _id: 'p1',
     title: 'Placeholder post — replace me in Sanity',
     slug: 'placeholder-post',
+    category: 'Measurement',
     excerpt: 'This is sample copy so the blog layout has something to show. Once Sanity is connected, real posts will appear here automatically.',
-    author: { name: 'Jordan Reyes', slug: 'jordan-reyes' },
+    keyTakeaways: ['This is a placeholder post.', 'Real posts will appear here once added in Sanity.'],
+    author: { name: 'Jordan Reyes', slug: 'jordan-reyes', role: 'Partner' },
     publishedAt: new Date().toISOString(),
   },
 ];

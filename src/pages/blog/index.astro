@@ -1,30 +1,186 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { sanityFetch } from '../../lib/sanity';
+import { sanityFetch, urlFor } from '../../lib/sanity';
 import { POSTS_QUERY } from '../../lib/queries';
 import { mockPosts } from '../../lib/mockData';
+import { readingTime } from '../../lib/portableText';
 import type { BlogPost } from '../../lib/types';
 
-const posts = await sanityFetch<BlogPost[]>(POSTS_QUERY, {}, mockPosts);
+const allPosts = await sanityFetch<BlogPost[]>(POSTS_QUERY, {}, mockPosts);
+const [featured, ...rest] = allPosts;
 
+const CATEGORIES = ['Measurement', 'Creative', 'Acquisition', 'Retention', 'Operations'];
 const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
-<Layout title="Blog">
-  <section class="mx-auto max-w-3xl px-6 py-20">
-    <p class="text-sm text-[var(--color-accent)]">Blog</p>
-    <h1 class="mt-4 text-4xl">Notes from the studio</h1>
-    <ul class="mt-12 divide-y divide-[var(--color-line)] border-t border-[var(--color-line)]">
-      {posts.map((post) => (
-        <li class="py-8">
-          <a href={`/blog/${post.slug}`} class="block">
-            <p class="text-xs text-[var(--color-ink)]/50">{dateFormatter.format(new Date(post.publishedAt))}</p>
-            <h2 class="mt-1 text-xl">{post.title}</h2>
-            <p class="prose-body mt-2 text-[var(--color-ink)]/70">{post.excerpt}</p>
-          </a>
-        </li>
+<Layout title="Journal" description="Notes on growing without guessing.">
+  <!-- Hero + newsletter -->
+  <section class="border-b border-[var(--color-line)]">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-14 px-6 pt-20 pb-16">
+      <div class="flex min-w-[280px] flex-[1_1_460px] flex-col gap-6">
+        <div class="flex items-center gap-3">
+          <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+          <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">THE PASCAL METHOD JOURNAL</span>
+        </div>
+        <h1 class="max-w-xl text-[clamp(36px,5.4vw,60px)] leading-[1.08] tracking-[-0.03em]">Notes on growing without guessing.</h1>
+        <p class="prose-body max-w-lg text-lg text-[var(--color-ink)]/62">
+          Tests we ran, things that broke, and the occasional strong opinion about measurement. Written for operators, not for the algorithm.
+        </p>
+      </div>
+      <form class="flex min-w-[280px] flex-[0_1_400px] flex-col gap-3.5 pb-1.5" data-newsletter>
+        <p class="font-mono text-[10.5px] tracking-[0.18em] text-[var(--color-ink)]/62">GET IT IN YOUR INBOX</p>
+        <div class="flex items-stretch border-b-2 border-[var(--color-ink)]">
+          <input type="email" required placeholder="you@brand.com" class="min-w-0 flex-1 bg-transparent py-3 text-[15px] outline-none" />
+          <button type="submit" class="flex-none py-3 pl-4 text-[11px] font-medium tracking-widest">SUBSCRIBE</button>
+        </div>
+        <p class="text-[11px] leading-relaxed text-[var(--color-ink)]/50">One email a month. No pop-ups, no drip sequence.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Filters + search -->
+  <section class="border-b border-[var(--color-line)] bg-[var(--color-surface)]">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-5 px-6 py-5">
+      <div class="flex flex-wrap items-center gap-2.5" data-filter-group>
+        <button type="button" data-filter="all" class="filter-pill is-active font-mono px-[15px] py-2 text-[10.5px] tracking-[0.13em]">ALL</button>
+        {CATEGORIES.map((cat) => (
+          <button type="button" data-filter={cat} class="filter-pill font-mono px-[15px] py-2 text-[10.5px] tracking-[0.13em]">{cat.toUpperCase()}</button>
+        ))}
+      </div>
+      <div class="flex min-w-[180px] items-center gap-2.5 border-b border-[var(--color-ink)]/25 pb-1.5">
+        <span class="h-[11px] w-[11px] flex-none rounded-full border-[1.5px] border-[var(--color-ink)]/50"></span>
+        <input type="search" data-search placeholder="Search the journal" class="min-w-0 flex-1 bg-transparent text-[12.5px] outline-none" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured -->
+  {featured && (
+    <section class="mx-auto max-w-6xl px-6 pt-18">
+      <a href={`/blog/${featured.slug}`} class="flex flex-wrap items-center gap-14 border-b border-[var(--color-ink)]/12 pb-16">
+        <div class="aspect-[16/10] min-w-[280px] flex-[1_1_480px] bg-[var(--color-surface)]">
+          {featured.coverImage && <img src={urlFor(featured.coverImage).width(900).url()} alt={featured.title} class="h-full w-full object-cover" />}
+        </div>
+        <div class="flex min-w-[280px] flex-[1_1_380px] flex-col gap-5">
+          <div class="flex items-center gap-2.5">
+            <span class="font-mono bg-[var(--color-accent)] px-[11px] py-1.5 text-[9.5px] tracking-[0.14em] text-white">FEATURED</span>
+            {featured.category && <span class="font-mono text-[10px] tracking-[0.14em] text-[var(--color-ink)]/55">{featured.category.toUpperCase()}</span>}
+          </div>
+          <h2 class="text-[clamp(28px,3.4vw,40px)] leading-[1.14] tracking-[-0.026em]">{featured.title}</h2>
+          <p class="prose-body max-w-lg text-[var(--color-ink)]/62">{featured.excerpt}</p>
+          <div class="font-mono flex items-center gap-3 text-[11px] tracking-[0.1em] text-[var(--color-ink)]/55">
+            {featured.author && <span>{featured.author.name.toUpperCase()}</span>}
+            <span class="text-[var(--color-ink)]/30">·</span>
+            <span>{readingTime(featured.body)} MIN READ</span>
+          </div>
+        </div>
+      </a>
+    </section>
+  )}
+
+  <!-- Post list -->
+  <section class="mx-auto max-w-6xl px-6">
+    <div data-post-list>
+      {rest.map((post, i) => (
+        <a
+          href={`/blog/${post.slug}`}
+          data-post-card
+          data-category={post.category ?? ''}
+          data-search-text={`${post.title} ${post.excerpt}`.toLowerCase()}
+          class={`flex flex-wrap items-center gap-10 border-b border-[var(--color-ink)]/12 py-11 ${i >= 6 ? 'hidden' : ''}`}
+        >
+          <div class="aspect-[16/10] min-w-[220px] flex-[0_1_300px] bg-[var(--color-surface)]">
+            {post.coverImage && <img src={urlFor(post.coverImage).width(600).url()} alt={post.title} class="h-full w-full object-cover" />}
+          </div>
+          <div class="flex min-w-[260px] flex-[1_1_340px] flex-col gap-3.5">
+            {post.category && <p class="font-mono text-[10px] tracking-[0.14em] text-[var(--color-ink)]/55">{post.category.toUpperCase()}</p>}
+            <h3 class="text-[clamp(21px,2.4vw,27px)] leading-[1.24] tracking-[-0.02em]">{post.title}</h3>
+            <p class="prose-body max-w-lg text-[15px] text-[var(--color-ink)]/62">{post.excerpt}</p>
+            <div class="font-mono flex items-center gap-3 text-[11px] tracking-[0.1em] text-[var(--color-ink)]/55">
+              {post.author && <span>{post.author.name.toUpperCase()}</span>}
+              <span class="text-[var(--color-ink)]/30">·</span>
+              <span>{readingTime(post.body)} MIN READ</span>
+            </div>
+          </div>
+        </a>
       ))}
-      {posts.length === 0 && <p class="py-8 text-[var(--color-ink)]/60">No posts yet.</p>}
-    </ul>
+    </div>
+    {rest.length === 0 && <p class="py-16 text-[var(--color-ink)]/60">No other posts yet.</p>}
+    {rest.length > 6 && (
+      <div class="flex justify-center py-16">
+        <button type="button" data-load-more class="border-[1.5px] border-[var(--color-ink)] px-8 py-[17px] text-[11.5px] font-medium tracking-[0.14em]">LOAD MORE</button>
+      </div>
+    )}
+  </section>
+
+  <!-- Newsletter CTA -->
+  <section class="bg-[var(--color-ink)] text-[var(--color-paper)]">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-16 px-6 py-22">
+      <div class="flex min-w-[280px] flex-[1_1_400px] flex-col gap-5">
+        <h2 class="max-w-lg text-[clamp(28px,3.6vw,42px)] leading-[1.14] tracking-[-0.026em]">One email a month. Only when we've learned something.</h2>
+        <p class="prose-body max-w-md text-[rgba(246,244,239,0.62)]">No roundups, no reposted platform announcements. If a month goes by without a real finding, you won't hear from us.</p>
+      </div>
+      <form class="flex min-w-[280px] flex-[0_1_420px] flex-col gap-3.5" data-newsletter>
+        <div class="flex items-stretch border-b-2 border-[var(--color-paper)]">
+          <input type="email" required placeholder="you@brand.com" class="min-w-0 flex-1 bg-transparent py-3.5 text-base text-[var(--color-paper)] outline-none" />
+          <button type="submit" class="flex-none py-3.5 pl-4 text-[11px] font-medium tracking-widest text-[var(--color-accent)]">SUBSCRIBE</button>
+        </div>
+        <p class="font-mono text-[11px] tracking-[0.06em] text-[rgba(246,244,239,0.45)]">UNSUBSCRIBE IN ONE CLICK, ALWAYS.</p>
+      </form>
+    </div>
   </section>
 </Layout>
+
+<style>
+  .filter-pill {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.66);
+  }
+  .filter-pill.is-active {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border-color: var(--color-ink);
+  }
+</style>
+
+<script>
+  // Category filter + search, all client-side since the full post list is already on the page.
+  const pills = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLAnchorElement>('[data-post-card]');
+  const searchInput = document.querySelector<HTMLInputElement>('[data-search]');
+  const loadMoreBtn = document.querySelector<HTMLButtonElement>('[data-load-more]');
+  let activeCategory = 'all';
+
+  function applyFilters() {
+    const query = (searchInput?.value ?? '').trim().toLowerCase();
+    cards.forEach((card) => {
+      const matchesCategory = activeCategory === 'all' || card.dataset.category === activeCategory;
+      const matchesSearch = !query || (card.dataset.searchText ?? '').includes(query);
+      card.classList.toggle('hidden', !(matchesCategory && matchesSearch));
+    });
+  }
+
+  pills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      activeCategory = pill.dataset.filter ?? 'all';
+      pills.forEach((p) => p.classList.toggle('is-active', p === pill));
+      applyFilters();
+    });
+  });
+
+  searchInput?.addEventListener('input', applyFilters);
+
+  loadMoreBtn?.addEventListener('click', () => {
+    cards.forEach((card) => card.classList.remove('hidden'));
+    applyFilters();
+    loadMoreBtn.style.display = 'none';
+  });
+
+  document.querySelectorAll<HTMLFormElement>('[data-newsletter]').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Placeholder until a real email provider (Mailchimp, ConvertKit, etc.) is connected.
+      alert("Newsletter signup isn't connected to an email provider yet.");
+    });
+  });
+</script>

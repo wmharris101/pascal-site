@@ -16,9 +16,11 @@ export const POSTS_QUERY = /* groq */ `
     _id,
     title,
     "slug": slug.current,
+    category,
     excerpt,
     coverImage,
-    "author": author->{ name, "slug": slug.current },
+    body,
+    "author": author->{ name, "slug": slug.current, role },
     publishedAt
   }
 `;
@@ -28,10 +30,12 @@ export const POST_BY_SLUG_QUERY = /* groq */ `
     _id,
     title,
     "slug": slug.current,
+    category,
     excerpt,
     body,
     coverImage,
-    "author": author->{ name, "slug": slug.current },
+    keyTakeaways,
+    "author": author->{ name, "slug": slug.current, role, headshots },
     publishedAt
   }
 `;

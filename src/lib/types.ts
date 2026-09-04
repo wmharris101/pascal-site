@@ -20,10 +20,12 @@ export interface BlogPost {
   _id: string;
   title: string;
   slug: string;
+  category?: string;
   excerpt: string;
   body?: any; // Portable Text
   coverImage?: any;
-  author?: { name: string; slug: string };
+  keyTakeaways?: string[];
+  author?: { name: string; slug: string; role?: string; headshots?: any[] };
   publishedAt: string;
 }
 
