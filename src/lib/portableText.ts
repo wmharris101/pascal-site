@@ -16,11 +16,17 @@ export function renderBody(body: any): string {
       block: {
         normal: ({ children }) =>
           `<p style="margin:0;font:400 18px/1.72 'Helvetica Neue',Helvetica,sans-serif;color:rgba(0,0,0,.78)">${children}</p>`,
+        h1: ({ children }) =>
+          `<h1 style="margin:20px 0 0;font:400 clamp(30px,3.6vw,40px)/1.16 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:-.026em">${children}</h1>`,
         h2: ({ children, value }) => {
           const text = (value.children ?? []).map((c: any) => c.text).join('');
           const id = slugify(text);
           return `<h2 id="${id}" style="margin:14px 0 0;font:400 clamp(26px,3vw,34px)/1.2 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:-.024em">${children}</h2>`;
         },
+        h3: ({ children }) =>
+          `<h3 style="margin:10px 0 0;font:400 clamp(22px,2.6vw,28px)/1.26 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:-.02em">${children}</h3>`,
+        h4: ({ children }) =>
+          `<h4 style="margin:8px 0 0;font:500 19px/1.3 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:-.01em">${children}</h4>`,
         blockquote: ({ children }) =>
           `<blockquote style="margin:20px 0;padding:0 0 0 28px;border-left:4px solid #16150f"><p style="margin:0;font:400 clamp(22px,2.6vw,28px)/1.44 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:-.018em;color:#16150f">${children}</p></blockquote>`,
       },
