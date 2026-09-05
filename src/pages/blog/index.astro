@@ -60,7 +60,7 @@ const ogImage = featured?.coverImage ? urlFor(featured.coverImage).width(1200).h
     <section class="mx-auto max-w-6xl px-6 pt-18">
       <a href={`/blog/${featured.slug}`} class="flex flex-wrap items-center gap-14 border-b border-[var(--color-ink)]/12 pb-16">
         <div class="aspect-[1200/630] min-w-[280px] flex-[1_1_480px] bg-[var(--color-surface)]">
-          {featured.coverImage && <img src={urlFor(featured.coverImage).width(900).url()} alt={featured.title} class="h-full w-full object-cover" />}
+          {featured.coverImage && <img src={urlFor(featured.coverImage).width(900).url()} alt={featured.coverImage.alt || featured.title} class="h-full w-full object-cover" />}
         </div>
         <div class="flex min-w-[280px] flex-[1_1_380px] flex-col gap-5">
           <div class="flex items-center gap-2.5">
@@ -91,7 +91,7 @@ const ogImage = featured?.coverImage ? urlFor(featured.coverImage).width(1200).h
           class={`flex flex-wrap items-center gap-10 border-b border-[var(--color-ink)]/12 py-11 ${i >= 6 ? 'hidden' : ''}`}
         >
           <div class="aspect-[1200/630] min-w-[220px] flex-[0_1_300px] bg-[var(--color-surface)]">
-            {post.coverImage && <img src={urlFor(post.coverImage).width(600).url()} alt={post.title} class="h-full w-full object-cover" />}
+            {post.coverImage && <img src={urlFor(post.coverImage).width(600).url()} alt={post.coverImage.alt || post.title} class="h-full w-full object-cover" />}
           </div>
           <div class="flex min-w-[260px] flex-[1_1_340px] flex-col gap-3.5">
             {post.category && <p class="font-mono text-[10px] tracking-[0.14em] text-[var(--color-ink)]/55">{post.category.toUpperCase()}</p>}

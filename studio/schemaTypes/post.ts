@@ -17,7 +17,20 @@ export default defineType({
       description: 'Powers the filter pills and badge on the Journal listing page.',
     }),
     defineField({ name: 'excerpt', title: 'Excerpt', type: 'text', description: 'Short summary shown on listing pages and as the subhead on the post itself.' }),
-    defineField({ name: 'coverImage', title: 'Cover image', type: 'image', options: { hotspot: true } }),
+    defineField({
+      name: 'coverImage',
+      title: 'Cover image',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe what\'s actually in the image (not the post title) — this is what screen readers announce and what Google Images indexes on.',
+        }),
+      ],
+    }),
     defineField({
       name: 'author',
       title: 'Author',
@@ -37,7 +50,15 @@ export default defineType({
       name: 'body',
       title: 'Body',
       type: 'array',
-      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }, { title: 'H2', value: 'h2' }, { title: 'Quote', value: 'blockquote' }] }, { type: 'image' }],
+      of: [
+        { type: 'block', styles: [{ title: 'Normal', value: 'normal' }, { title: 'H2', value: 'h2' }, { title: 'Quote', value: 'blockquote' }] },
+        {
+          type: 'image',
+          fields: [
+            defineField({ name: 'alt', title: 'Alt text', type: 'string', description: 'Describe what\'s in this specific image.' }),
+          ],
+        },
+      ],
       description: 'Use "H2" style for section headings — they automatically build the table of contents on the post page.',
     }),
   ],

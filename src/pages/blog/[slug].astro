@@ -63,7 +63,7 @@ const ogImage = post.coverImage ? urlFor(post.coverImage).width(1200).height(630
     {post.coverImage && (
       <div class="bg-[var(--color-ink)]">
         <div class="mx-auto max-w-6xl px-6">
-          <img src={urlFor(post.coverImage).width(1600).url()} alt={post.title} class="aspect-[21/9] w-full object-cover" />
+          <img src={urlFor(post.coverImage).width(1600).url()} alt={post.coverImage.alt || post.title} class="aspect-[21/9] w-full object-cover" />
         </div>
       </div>
     )}
@@ -136,7 +136,7 @@ const ogImage = post.coverImage ? urlFor(post.coverImage).width(1200).height(630
         {related.map((p) => (
           <a href={`/blog/${p.slug}`} class="flex flex-col gap-4.5">
             <div class="aspect-[1200/630] bg-[var(--color-surface)]">
-              {p.coverImage && <img src={urlFor(p.coverImage).width(500).url()} alt={p.title} class="h-full w-full object-cover" />}
+              {p.coverImage && <img src={urlFor(p.coverImage).width(500).url()} alt={p.coverImage.alt || p.title} class="h-full w-full object-cover" />}
             </div>
             <div class="flex flex-col gap-2.5">
               {p.category && <p class="font-mono text-[10px] tracking-[0.14em] text-[var(--color-ink)]/55">{p.category.toUpperCase()}</p>}
