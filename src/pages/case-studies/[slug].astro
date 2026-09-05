@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityFetch, urlFor } from '../../lib/sanity';
+import { CASE_STUDIES_QUERY, CASE_STUDY_BY_SLUG_QUERY } from '../../lib/queries';
+import { mockCaseStudies } from '../../lib/mockData';
+import type { CaseStudy } from '../../lib/types';
+import { renderBody } from '../../lib/portableText';
+
+export async function getStaticPaths() {
+  const caseStudies = await sanityFetch<CaseStudy[]>(CASE_STUDIES_QUERY, {}, mockCaseStudies);
+  return caseStudies.map((cs) => ({ params: { slug: cs.slug } }));
+}
+
+const { slug } = Astro.params;
+const fallback = mockCaseStudies.find((c) => c.slug === slug) ?? mockCaseStudies[0];
+const caseStudy = await sanityFetch<CaseStudy>(CASE_STUDY_BY_SLUG_QUERY, { slug }, fallback);
+const bodyHtml = renderBody(caseStudy?.body);
+const ogImage = caseStudy?.featuredPhoto ? urlFor(caseStudy.featuredPhoto).width(1200).height(630).fit('crop').url() : undefined;
+---
+
+<Layout title={caseStudy.title} description={caseStudy.summary} image={ogImage}>
+  <article class="mx-auto max-w-3xl px-6 py-20">
+    <a href="/case-studies" class="font-mono text-xs tracking-widest text-[var(--color-ink)]/55">&larr; ALL CASE STUDIES</a>
+
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      {caseStudy.clientLogo && <img src={urlFor(caseStudy.clientLogo).height(28).url()} alt={caseStudy.client ?? ''} class="h-7 w-auto" />}
+      {caseStudy.client && <span class="font-mono text-[11px] tracking-[0.14em] text-[var(--color-ink)]/55">{caseStudy.client.toUpperCase()}</span>}
+    </div>
+
+    <h1 class="mt-4 text-4xl">{caseStudy.title}</h1>
+    {caseStudy.summary && <p class="prose-body mt-6 text-lg text-[var(--color-ink)]/70">{caseStudy.summary}</p>}
+
+    {caseStudy.featuredPhoto && (
+      <img src={urlFor(caseStudy.featuredPhoto).width(1200).url()} alt={caseStudy.title} class="mt-10 aspect-[16/9] w-full object-cover" />
+    )}
+
+    {caseStudy.chartImage && (
+      <figure class="mt-10">
+        <img src={urlFor(caseStudy.chartImage).width(1200).url()} alt="Results chart" class="w-full" />
+      </figure>
+    )}
+
+    {bodyHtml && <div class="post-body mt-10 flex flex-col gap-6" set:html={bodyHtml} />}
+  </article>
+</Layout>

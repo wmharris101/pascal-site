@@ -1,26 +1,163 @@
 ---
 // On the homepage these are in-page anchors; elsewhere they link back to the
-// homepage sections. The real sub-pages (Team/Blog/Podcast) are separate
-// routes since that content is structured, per-item data from Sanity.
+// homepage sections. Real sub-pages are separate routes.
 const isHome = Astro.url.pathname === '/';
 const sectionLink = (hash: string) => (isHome ? hash : `/${hash}`);
+
+const NAV = [
+  {
+    label: 'Services',
+    href: '/services',
+    items: [
+      { label: 'Google Ads', href: '/services/google-ads' },
+      { label: 'Google Shopping Ads', href: '/services/google-shopping-ads' },
+      { label: 'YouTube Ads', href: '/services/youtube-ads' },
+      { label: 'Advertising for Amazon', href: '/services/advertising-for-amazon' },
+      { label: 'DSP for Amazon', href: '/services/dsp-for-amazon' },
+      { label: 'Brand Mgmt for Amazon', href: '/services/brand-mgmt-for-amazon' },
+      { label: 'Email & SMS', href: '/services/email-sms' },
+      { label: 'Facebook', href: '/services/facebook-ads' },
+      { label: 'TikTok Ads', href: '/services/tiktok-ads' },
+    ],
+  },
+  {
+    label: 'Why Pascal',
+    href: sectionLink('#why'),
+    items: [
+      { label: 'The Method', href: sectionLink('#method') },
+      { label: 'Case Studies', href: '/case-studies' },
+    ],
+  },
+  {
+    label: 'Our Team',
+    href: '/team',
+    items: [
+      { label: 'The People', href: '/team' },
+      { label: 'Careers', href: '/careers' },
+      { label: 'Charities', href: '/charities' },
+    ],
+  },
+  {
+    label: 'Resources',
+    href: '/blog',
+    items: [
+      { label: 'Podcasts', href: '/podcast' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Guides', href: '/guides' },
+      { label: 'Courses', href: '/courses' },
+      { label: 'Events', href: '/events' },
+    ],
+  },
+];
+
+const ctaHref = sectionLink('#contact');
 ---
 
-<header class="sticky top-0 z-10 border-b border-[var(--color-line)] bg-[var(--color-paper)]/92 backdrop-blur-sm">
+<header class="sticky top-0 z-20 border-b border-[var(--color-line)] bg-[var(--color-paper)]/92 backdrop-blur-sm">
   <div class="mx-auto flex min-h-[90px] max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3">
     <a href="/" class="flex items-center gap-4">
       <span class="funnel-mark" style="--mark-unit: 5.5px;"><span></span><span></span><span></span><span></span></span>
       <span class="font-logo text-[28px]">Pascal Method</span>
     </a>
-    <nav class="flex flex-wrap items-center gap-7" aria-label="Primary">
-      <a href={sectionLink('#why')} class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Why Pascal</a>
-      <a href={sectionLink('#method')} class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Method</a>
-      <a href="/team" class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Team</a>
-      <a href="/blog" class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Journal</a>
-      <a href="/podcast" class="text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]">Podcast</a>
-      <a href={sectionLink('#contact')} class="bg-[var(--color-ink)] px-[18px] py-[11px] text-[11px] font-medium tracking-widest text-[var(--color-paper)]">
-        GET A TEARDOWN
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-7 lg:flex" aria-label="Primary" data-nav>
+      {NAV.map((group) => (
+        <div class="relative" data-nav-group>
+          <button
+            type="button"
+            data-nav-trigger
+            class="flex items-center gap-1.5 text-xs tracking-wide text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]"
+          >
+            {group.label}
+            <svg width="9" height="6" viewBox="0 0 9 6" fill="none" aria-hidden="true"><path d="M1 1l3.5 3.5L8 1" stroke="currentColor" stroke-width="1.4" /></svg>
+          </button>
+          <div
+            data-nav-panel
+            class="invisible absolute left-1/2 top-full z-10 mt-3 w-56 -translate-x-1/2 translate-y-1 rounded-sm border border-[var(--color-line)] bg-[var(--color-paper)] py-2 opacity-0 shadow-lg transition-all duration-150"
+          >
+            {group.items.map((item) => (
+              <a href={item.href} class="block px-5 py-2.5 text-sm text-[var(--color-ink)]/75 hover:bg-[var(--color-surface)] hover:text-[var(--color-ink)]">
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+      <a href={ctaHref} class="bg-[var(--color-ink)] px-[18px] py-[11px] text-[11px] font-medium tracking-widest text-[var(--color-paper)]">
+        LET'S TALK
       </a>
     </nav>
+
+    <!-- Mobile menu button -->
+    <button type="button" data-mobile-toggle aria-label="Open menu" aria-expanded="false" class="flex flex-col gap-1.5 lg:hidden">
+      <span class="h-[2px] w-6 bg-[var(--color-ink)]"></span>
+      <span class="h-[2px] w-6 bg-[var(--color-ink)]"></span>
+      <span class="h-[2px] w-4 self-end bg-[var(--color-ink)]"></span>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div data-mobile-menu class="hidden border-t border-[var(--color-line)] bg-[var(--color-paper)] lg:hidden">
+    <div class="flex flex-col gap-1 px-6 py-4">
+      {NAV.map((group) => (
+        <details class="group border-b border-[var(--color-line)] py-2">
+          <summary class="flex cursor-pointer list-none items-center justify-between py-2 text-sm text-[var(--color-ink)]">
+            {group.label}
+            <svg width="10" height="7" viewBox="0 0 9 6" fill="none" aria-hidden="true" class="transition-transform group-open:rotate-180"><path d="M1 1l3.5 3.5L8 1" stroke="currentColor" stroke-width="1.4" /></svg>
+          </summary>
+          <div class="flex flex-col gap-1 pb-3 pl-3">
+            {group.items.map((item) => (
+              <a href={item.href} class="py-2 text-sm text-[var(--color-ink)]/70">{item.label}</a>
+            ))}
+          </div>
+        </details>
+      ))}
+      <a href={ctaHref} class="mt-4 bg-[var(--color-ink)] px-5 py-3 text-center text-xs font-medium tracking-widest text-[var(--color-paper)]">
+        LET'S TALK
+      </a>
+    </div>
   </div>
 </header>
+
+<script>
+  // Desktop dropdowns: click to open, click outside or Escape to close, only one open at a time.
+  const groups = document.querySelectorAll<HTMLElement>('[data-nav-group]');
+
+  function closeAll() {
+    groups.forEach((group) => {
+      const panel = group.querySelector<HTMLElement>('[data-nav-panel]');
+      panel?.classList.add('invisible', 'opacity-0');
+      panel?.classList.remove('visible', 'opacity-100');
+      group.querySelector('[data-nav-trigger]')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  groups.forEach((group) => {
+    const trigger = group.querySelector<HTMLButtonElement>('[data-nav-trigger]');
+    const panel = group.querySelector<HTMLElement>('[data-nav-panel]');
+    trigger?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = panel?.classList.contains('opacity-100');
+      closeAll();
+      if (!isOpen) {
+        panel?.classList.remove('invisible', 'opacity-0');
+        panel?.classList.add('visible', 'opacity-100');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  document.addEventListener('click', closeAll);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAll();
+  });
+
+  // Mobile menu toggle
+  const mobileToggle = document.querySelector<HTMLButtonElement>('[data-mobile-toggle]');
+  const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+  mobileToggle?.addEventListener('click', () => {
+    const isOpen = mobileMenu?.classList.toggle('hidden') === false;
+    mobileToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+</script>

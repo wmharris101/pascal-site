@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { SERVICES } from '../../lib/servicesData';
+
+export async function getStaticPaths() {
+  return SERVICES.map((service) => ({ params: { slug: service.slug } }));
+}
+
+const { slug } = Astro.params;
+const service = SERVICES.find((s) => s.slug === slug)!;
+---
+
+<Layout title={service.name} description={service.blurb}>
+  <section class="mx-auto max-w-3xl px-6 py-20">
+    <a href="/services" class="font-mono text-xs tracking-widest text-[var(--color-ink)]/55">&larr; ALL SERVICES</a>
+    <div class="mt-8 mb-4 flex items-center gap-3">
+      <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+      <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">SERVICE</span>
+    </div>
+    <h1 class="text-4xl">{service.name}</h1>
+    <p class="prose-body mt-6 max-w-xl text-lg text-[var(--color-ink)]/70">{service.blurb}</p>
+    <p class="prose-body mt-6 max-w-xl text-[var(--color-ink)]/55">
+      This page is a placeholder — the full breakdown of how Pascal Method runs {service.name} (approach, what's included, and results) goes here once that copy is ready.
+    </p>
+    <a href="/contact" class="mt-8 inline-block bg-[var(--color-ink)] px-7 py-[17px] text-xs font-medium tracking-widest text-[var(--color-paper)]">GET A TEARDOWN</a>
+  </section>
+</Layout>

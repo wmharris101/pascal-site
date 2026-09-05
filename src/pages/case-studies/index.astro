@@ -1,0 +1,39 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sanityFetch, urlFor } from '../../lib/sanity';
+import { CASE_STUDIES_QUERY } from '../../lib/queries';
+import { mockCaseStudies } from '../../lib/mockData';
+import type { CaseStudy } from '../../lib/types';
+
+const caseStudies = await sanityFetch<CaseStudy[]>(CASE_STUDIES_QUERY, {}, mockCaseStudies);
+---
+
+<Layout title="Case Studies" description="Real results, from real accounts.">
+  <section class="mx-auto max-w-6xl px-6 py-20">
+    <div class="mb-4 flex items-center gap-3">
+      <span class="h-[5px] w-[34px] bg-[var(--color-accent)]"></span>
+      <span class="font-mono text-[11px] tracking-[0.22em] text-[var(--color-ink)]/55">CASE STUDIES</span>
+    </div>
+    <h1 class="max-w-2xl text-4xl">A short client list, on purpose</h1>
+    <p class="prose-body mt-4 max-w-xl text-[var(--color-ink)]/65">We take on four accounts at a time so each one gets a partner, not a pod.</p>
+
+    {caseStudies.length > 0 ? (
+      <div class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        {caseStudies.map((cs) => (
+          <a href={`/case-studies/${cs.slug}`} class="flex flex-col gap-4">
+            <div class="aspect-[4/3] bg-[var(--color-surface)]">
+              {cs.featuredPhoto && <img src={urlFor(cs.featuredPhoto).width(600).url()} alt={cs.title} class="h-full w-full object-cover" />}
+            </div>
+            <div class="flex flex-col gap-2">
+              {cs.client && <p class="font-mono text-[10px] tracking-[0.14em] text-[var(--color-ink)]/55">{cs.client.toUpperCase()}</p>}
+              <p class="text-lg">{cs.title}</p>
+              {cs.summary && <p class="prose-body text-sm text-[var(--color-ink)]/65">{cs.summary}</p>}
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="mt-14 text-[var(--color-ink)]/60">No case studies published yet — add one in Sanity to see it here.</p>
+    )}
+  </section>
+</Layout>
